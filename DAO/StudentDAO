@@ -1,0 +1,125 @@
+package dao;
+
+import System.Student;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import database.DBConnection;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
+
+public class StudentDAO {
+    private Connection connection;
+
+    public StudentDAO() {
+        connection = DBConnection.getConnection();
+    }
+
+    public void addStudent(Student student) {
+        String sql = "INSERT INTO students(id, student_id, name, gender, email, total_marks, total_credits) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, student.getId());
+            preparedStatement.setInt(2, student.getStudentId());
+            preparedStatement.setString(3, student.getName());
+            preparedStatement.setString(4, student.getGender());
+            preparedStatement.setString(5, student.getEmail());
+            preparedStatement.setDouble(6, student.getTotalMarks());
+            preparedStatement.setInt(7, student.getTotalCredits());
+
+            preparedStatement.executeUpdate();
+
+            System.out.println("Student added successfully!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public List<Student> getAllStudents() {
+
+        List<Student> students = new ArrayList<>();
+
+        String sql = "SELECT * FROM students";
+
+        try {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                Student student = new Student(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("gender"),
+                        resultSet.getString("email"),
+                        resultSet.getInt("student_id"),
+                        resultSet.getDouble("total_marks"),
+                        resultSet.getInt("total_credits")
+                );
+
+                students.add(student);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return students;
+    }
+    public void updateStudent(Student student) {
+
+        String sql = "UPDATE students SET name = ?, gender = ?, email = ?, total_marks = ?, total_credits = ? WHERE student_id = ?";
+
+        try {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, student.getName());
+            preparedStatement.setString(2, student.getGender());
+            preparedStatement.setString(3, student.getEmail());
+            preparedStatement.setDouble(4, student.getTotalMarks());
+            preparedStatement.setInt(5, student.getTotalCredits());
+            preparedStatement.setInt(6, student.getStudentId());
+
+            int Update = preparedStatement.executeUpdate();
+
+            if (Update > 0) {
+                System.out.println("Student updated successfully!");
+            } else {
+                System.out.println("Student not found.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public void deleteStudent(int studentId) {
+
+        String sql = "DELETE FROM students WHERE student_id = ?";
+
+        try {
+
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setInt(1, studentId);
+
+            int rowsDeleted = preparedStatement.executeUpdate();
+
+            if (rowsDeleted > 0) {
+                System.out.println("Student deleted successfully!");
+            } else {
+                System.out.println("Student not found.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
