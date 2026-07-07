@@ -1,0 +1,7 @@
+CREATE TABLE courses (
+    course_id INT PRIMARY KEY,
+    course_name VARCHAR(100) NOT NULL,
+    credits INT NOT NULL,
+    instructor_id INT NOT NULL,
+    FOREIGN KEY (instructor_id) REFERENCES instructors(id)
+);
