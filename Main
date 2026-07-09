@@ -92,9 +92,7 @@ public class Main {
                 }
 
             } catch (InputMismatchException e) {
-                System.out.println(
-                        "Please enter numbers only."
-                );
+                System.out.println( "Please enter numbers only.");
                 scanner.nextLine();
             } catch (Exception e) {
                 System.out.println("An error occurred.");
