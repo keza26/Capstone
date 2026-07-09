@@ -1,0 +1,107 @@
+import dao.CourseDAO;
+import dao.EnrollmentDAO;
+import dao.StudentDAO;
+import System.Student;
+
+import java.util.InputMismatchException;
+import java.util.Scanner;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+
+        StudentDAO studentDAO = new StudentDAO();
+        CourseDAO courseDAO = new CourseDAO();
+        EnrollmentDAO enrollmentDAO = new EnrollmentDAO();
+
+        int choice = 0;
+
+        while (choice != 9) {
+
+            System.out.println("\n===== UNIVERSITY MANAGEMENT SYSTEM =====");
+            System.out.println("1. View Students");
+            System.out.println("2. View Courses");
+            System.out.println("3. Enroll Student");
+            System.out.println("4. View Enrollments");
+            System.out.println("5. Delete Student");
+            System.out.println("6. Delete Course");
+            System.out.println("7. Remove Enrollment");
+            System.out.println("8. Add Student");
+            System.out.println("9. Exit");
+
+            try {
+                System.out.print("Enter your choice: ");
+                choice = scanner.nextInt();
+
+                switch (choice) {
+
+                    case 1:
+                        for (Student student : studentDAO.getAllStudents()) {
+                            System.out.println(student);
+                        }
+                        break;
+
+                    case 2:
+                        courseDAO.getAllCourses().forEach(System.out::println);
+                        break;
+
+                    case 3:
+                        System.out.print("Student ID: ");
+                        int studentId = scanner.nextInt();
+
+                        System.out.print("Course ID: ");
+                        int courseId = scanner.nextInt();
+
+                        enrollmentDAO.enrollStudent(studentId, courseId);
+                        break;
+
+                    case 4:
+                        enrollmentDAO.checkEnrollments();
+                        break;
+
+                    case 5:
+                        System.out.print("Enter Student ID: ");
+                        studentDAO.deleteStudent(scanner.nextInt());
+                        break;
+
+                    case 6:
+                        System.out.print("Enter Course ID: ");
+                        courseDAO.deleteCourse(scanner.nextInt());
+                        break;
+
+                    case 7:
+                        System.out.print("Student ID: ");
+                        int sId = scanner.nextInt();
+                        System.out.print("Course ID: ");
+                        int cId = scanner.nextInt();
+                        enrollmentDAO.removeEnrollment(sId, cId);
+                        break;
+
+                    case 8:
+                        System.out.println("Insert a new student."); //Here we use StudentDAO addStudent() to add a student
+                        break;
+
+                    case 9:
+                        System.out.println("Exiting system...");
+                        break;
+
+                    default:
+                        System.out.println("Invalid choice.");
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println(
+                        "Please enter numbers only."
+                );
+                scanner.nextLine();
+            } catch (Exception e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        }
+
+        scanner.close();
+    }
+}
