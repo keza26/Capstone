@@ -1,0 +1,93 @@
+package dao;
+
+import database.DBConnection;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class EnrollmentDAO {
+
+    private final Connection connection;
+
+    public EnrollmentDAO() {
+        connection = DBConnection.getConnection();
+    }
+
+    public void enrollStudent(int studentId, int courseId) {
+
+        String sql =
+                "INSERT INTO enrollments(student_id, course_id) VALUES (?, ?)";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            ps.setInt(1, studentId);
+            ps.setInt(2, courseId);
+
+            ps.executeUpdate();
+
+            System.out.println("Student enrolled successfully!");
+
+        } catch (SQLException e) {
+            System.out.println("Enrolling student failed.");
+            e.printStackTrace();
+        }
+    }
+
+
+    public void removeEnrollment(int studentId, int courseId) {
+
+        String sql = "DELETE FROM enrollments WHERE student_id = ? AND course_id = ?";
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            ps.setInt(1, studentId);
+            ps.setInt(2, courseId);
+
+            int rows = ps.executeUpdate();
+
+            if (rows > 0) {
+                System.out.println("Enrollment removed successfully!");
+            } else {
+                System.out.println("Enrollment not found.");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void checkEnrollments() {
+
+        String sql = """
+                SELECT student.name,
+                 course.course_name
+                FROM enrollments 
+                JOIN students 
+                ON enrollments.student_id = students.student_id
+                JOIN courses 
+                ON enrollments.course_id = c.course_id
+                """;
+
+        try {
+
+            PreparedStatement ps = connection.prepareStatement(sql);
+
+            ResultSet rs = ps.executeQuery();
+
+            System.out.println("\n===== ENROLLMENTS =====");
+
+            while (rs.next()) {
+                System.out.println(
+                        "Student: " + rs.getString("name") + " Course: " + rs.getString("course_name")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
